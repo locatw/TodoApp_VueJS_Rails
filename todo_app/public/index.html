@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <head>
+  <meta charset="UTF-8">
   <title>Todo App</title>
   <script src="https://cdn.jsdelivr.net/npm/vue"></script>
   <script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
 </head>
 <body>
   <h1>Todo List</h1>
-  <div id="app">
+  <div id="new-todo">
+    <input v-model="newTodo">
+    <button v-on:click="addTodo">追加</button>
+  </div>
+  <div id="todo-list">
     <ol>
       <todo-item
         v-for="item in todoList"
@@ -22,8 +27,8 @@
       template: "<li>{{ todo.text }}</li>"
     });
 
-    var app = new Vue({
-      el: "#app",
+    var todoList = new Vue({
+      el: "#todo-list",
       data: {
         todoList: []
       },
@@ -43,5 +48,25 @@
         }
       }
     });
+
+    var newTodo = new Vue({
+      el: "#new-todo",
+      data: {
+        newTodo: ''
+      },
+      methods: {
+        addTodo: function(event) {
+          var vm = this;
+          axios.post("http://localhost:3000/api/todos", { text: vm.newTodo })
+            .then(function(response) {
+              vm.newTodo = '';
+              todoList.loadTodoList();
+            })
+            .catch(function(error) {
+              alert("error: " + error);
+            });
+        }
+      }
+    })
   </script>
 </body>
