@@ -19,4 +19,13 @@ class Api::TodosController < ApplicationController
   def index
     render json: Todo.all
   end
+
+  def update
+    id = params.require(:id).to_i
+    patch = params.require(:todo).permit(:text)
+
+    Todo.find(id).update!(patch)
+
+    head :ok
+  end
 end

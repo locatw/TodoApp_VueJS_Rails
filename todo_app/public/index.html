@@ -13,6 +13,7 @@
     <ol>
       <li v-for="item in todoList">
         <p>{{ item.text }}</p>
+        <button v-on:click='updateTodo(item.id)'>編集</button>
         <button v-on:click='deleteTodo(item.id)'>削除</button>
       </li>
     </ol>
@@ -46,6 +47,19 @@
           axios.post(apiUrl + "/todos", { text: vm.newTodo })
             .then(function(response) {
               vm.newTodo = '';
+              vm.refresh();
+            })
+            .catch(function(error) {
+              alert("error: " + error);
+            });
+        },
+        updateTodo: function(todoId) {
+          var targetTodo = this.todoList.find(function(todo) { return todo.id == todoId; })
+          var updatedText = prompt('TODOの編集', targetTodo.text);
+
+          var vm = this;
+          axios.patch(apiUrl + "/todos/" + todoId, { todo: { text: updatedText } })
+            .then(function(response) {
               vm.refresh();
             })
             .catch(function(error) {
