@@ -22,7 +22,7 @@ class Api::TodosController < ApplicationController
 
   def update
     id = params.require(:id).to_i
-    patch = params.require(:todo).permit(:text)
+    patch = params.require(:todo).permit(:text, :done)
 
     Todo.find(id).update!(patch)
 

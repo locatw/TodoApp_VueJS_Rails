@@ -10,13 +10,14 @@
   <div id="todo">
     <input v-model="newTodo">
     <button v-on:click="addTodo">追加</button>
-    <ol>
+    <ul>
       <li v-for="item in todoList">
+        <input type="checkbox" v-model="item.done" v-on:click="toggleTodoDone(item.id, $event)">
         <p>{{ item.text }}</p>
-        <button v-on:click='updateTodo(item.id)'>編集</button>
+        <button v-on:click='updateTodoText(item.id)'>編集</button>
         <button v-on:click='deleteTodo(item.id)'>削除</button>
       </li>
-    </ol>
+    </ul>
   </div>
 
   <script>
@@ -53,18 +54,22 @@
               alert("error: " + error);
             });
         },
-        updateTodo: function(todoId) {
-          var targetTodo = this.todoList.find(function(todo) { return todo.id == todoId; })
-          var updatedText = prompt('TODOの編集', targetTodo.text);
-
+        updateTodo: function(todoId, updatedText, updatedDone) {
           var vm = this;
-          axios.patch(apiUrl + "/todos/" + todoId, { todo: { text: updatedText } })
+          var content = { todo: { text: updatedText, done: updatedDone } };
+          axios.patch(apiUrl + "/todos/" + todoId, content)
             .then(function(response) {
               vm.refresh();
             })
             .catch(function(error) {
               alert("error: " + error);
             });
+        },
+        updateTodoText: function(todoId) {
+          var targetTodo = this.findTodo(todoId);
+          var updatedText = prompt('TODOの編集', targetTodo.text);
+
+          this.updateTodo(todoId, updatedText, targetTodo.done);
         },
         deleteTodo: function(todoId) {
           var vm = this;
@@ -76,8 +81,15 @@
               alert("error: " + error);
             });
         },
+        toggleTodoDone: function(todoId, event) {
+          var targetTodo = this.findTodo(todoId);
+          this.updateTodo(todoId, targetTodo.text, event.target.checked);
+        },
         refresh: function() {
           this.loadTodoList();
+        },
+        findTodo: function(id) {
+          return this.todoList.find(function(todo) { return todo.id == id; });
         }
       }
     });
