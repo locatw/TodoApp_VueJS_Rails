@@ -25,6 +25,8 @@
       template: "<li>{{ todo.text }}</li>"
     });
 
+    var apiUrl = "http://localhost:3000/api";
+
     new Vue({
       el: "#todo",
       data: {
@@ -37,7 +39,7 @@
       methods: {
         loadTodoList: function() {
           var vm = this;
-          axios.get("http://localhost:3000/api/todos")
+          axios.get(apiUrl + "/todos")
             .then(function(response) {
               vm.todoList = response.data
             })
@@ -47,14 +49,17 @@
         },
         addTodo: function(event) {
           var vm = this;
-          axios.post("http://localhost:3000/api/todos", { text: vm.newTodo })
+          axios.post(apiUrl + "/todos", { text: vm.newTodo })
             .then(function(response) {
               vm.newTodo = '';
-              vm.loadTodoList();
+              vm.refresh();
             })
             .catch(function(error) {
               alert("error: " + error);
             });
+        },
+        refresh: function() {
+          this.loadTodoList();
         }
       }
     });
