@@ -7,11 +7,9 @@
 </head>
 <body>
   <h1>Todo List</h1>
-  <div id="new-todo">
+  <div id="todo">
     <input v-model="newTodo">
     <button v-on:click="addTodo">追加</button>
-  </div>
-  <div id="todo-list">
     <ol>
       <todo-item
         v-for="item in todoList"
@@ -27,10 +25,11 @@
       template: "<li>{{ todo.text }}</li>"
     });
 
-    var todoList = new Vue({
-      el: "#todo-list",
+    new Vue({
+      el: "#todo",
       data: {
-        todoList: []
+        todoList: [],
+        newTodo: ''
       },
       created: function() {
         this.loadTodoList();
@@ -45,28 +44,19 @@
             .catch(function(error) {
               alert("error: " + error);
             });
-        }
-      }
-    });
-
-    var newTodo = new Vue({
-      el: "#new-todo",
-      data: {
-        newTodo: ''
-      },
-      methods: {
+        },
         addTodo: function(event) {
           var vm = this;
           axios.post("http://localhost:3000/api/todos", { text: vm.newTodo })
             .then(function(response) {
               vm.newTodo = '';
-              todoList.loadTodoList();
+              vm.loadTodoList();
             })
             .catch(function(error) {
               alert("error: " + error);
             });
         }
       }
-    })
+    });
   </script>
 </body>
