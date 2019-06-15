@@ -11,20 +11,14 @@
     <input v-model="newTodo">
     <button v-on:click="addTodo">追加</button>
     <ol>
-      <todo-item
-        v-for="item in todoList"
-        v-bind:todo="item"
-        v-bind:key="item.id"
-      ></todo-item>
+      <li v-for="item in todoList">
+        <p>{{ item.text }}</p>
+        <button v-on:click='deleteTodo(item.id)'>削除</button>
+      </li>
     </ol>
   </div>
 
   <script>
-    Vue.component("todo-item", {
-      props: ["todo"],
-      template: "<li>{{ todo.text }}</li>"
-    });
-
     var apiUrl = "http://localhost:3000/api";
 
     new Vue({
@@ -52,6 +46,16 @@
           axios.post(apiUrl + "/todos", { text: vm.newTodo })
             .then(function(response) {
               vm.newTodo = '';
+              vm.refresh();
+            })
+            .catch(function(error) {
+              alert("error: " + error);
+            });
+        },
+        deleteTodo: function(todoId) {
+          var vm = this;
+          axios.delete(apiUrl + "/todos/" + todoId)
+            .then(function(response) {
               vm.refresh();
             })
             .catch(function(error) {

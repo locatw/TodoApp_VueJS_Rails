@@ -8,6 +8,14 @@ class Api::TodosController < ApplicationController
     render body: nil, status: :created
   end
 
+  def destroy
+    id = params.require(:id).to_i
+
+    Todo.find(id).destroy!
+
+    head :no_content
+  end
+
   def index
     render json: Todo.all
   end
